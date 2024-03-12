@@ -15,58 +15,33 @@ public class FakeStoreCartService implements CartService {
     private RestTemplate restTemplate = new RestTemplate();
 
     public Cart getSingleCart(Long id) {
-        FakeStoreCartServiceDto fakeStoreCartServiceDto = restTemplate.getForObject(
+        FakeStoreCartServiceDto ServiceDto = restTemplate.getForObject(
                 "https://fakestoreapi.com/carts/" + id,
                 FakeStoreCartServiceDto.class
         );
         Cart cart = new Cart();
-        cart.setId(fakeStoreCartServiceDto.getId());
-        cart.setUserId(fakeStoreCartServiceDto.getUserId());
-        cart.setDate(fakeStoreCartServiceDto.getDate());
+        cart.setId(ServiceDto.getId());
+        cart.setUserId(ServiceDto.getUserId());
+        cart.setDate(ServiceDto.getDate());
         List<Products> products = new ArrayList<>();
-        for (HashMap<String, Integer> ele : fakeStoreCartServiceDto.getProducts()) {
+        for (HashMap<String, Integer> ele : ServiceDto.getProducts()) {
             Products product = new Products();
-            product.setProductId(ele.get("productId"));
             product.setQuantity(ele.get("quantity"));
+            product.setProductId(ele.get("productId"));
             products.add(product);
         }
         cart.setProducts(products);
-        System.out.println("Cart fetched successfully!!!");
         return cart;
     }
 
-    public List<Cart> getAllCarts() {
-        FakeStoreCartServiceDto[] fakeStoreCartServiceDto = restTemplate.getForObject(
-                "https://fakestoreapi.com/carts/",
-                FakeStoreCartServiceDto[].class
-        );
-        List<Cart> ans = new ArrayList<>();
-        for (FakeStoreCartServiceDto carts : fakeStoreCartServiceDto) {
-            Cart cart = new Cart();
-            cart.setId(carts.getId());
-            cart.setUserId(carts.getUserId());
-            cart.setDate(carts.getDate());
-            List<Products> products = new ArrayList<>();
-            for (HashMap<String, Integer> ele : carts.getProducts()) {
-                Products product = new Products();
-                product.setProductId(ele.get("productId"));
-                product.setQuantity(ele.get("quantity"));
-                products.add(product);
-            }
-            cart.setProducts(products);
-            ans.add(cart);
-        }
-        System.out.println("All carts fetched successfully!!!");
-        return ans;
-    }
 
-    public List<Cart> getCartsInDateRange(String startDate, String endDate) {
-        FakeStoreCartServiceDto[] fakeStoreCartServiceDto = restTemplate.getForObject(
-                "https://fakestoreapi.com/carts?startdate="+startDate+"&enddate="+endDate,
+    public List<Cart> getCartsInDate(String sDate, String eDate) {
+        FakeStoreCartServiceDto[] serviceDto = restTemplate.getForObject(
+                "https://fakestoreapi.com/carts?startdate="+sDate+"&enddate="+eDate,
                 FakeStoreCartServiceDto[].class
         );
         List<Cart> ans = new ArrayList<>();
-        for (FakeStoreCartServiceDto carts : fakeStoreCartServiceDto) {
+        for (FakeStoreCartServiceDto carts : serviceDto) {
             Cart cart = new Cart();
             cart.setId(carts.getId());
             cart.setUserId(carts.getUserId());
@@ -74,24 +49,23 @@ public class FakeStoreCartService implements CartService {
             List<Products> products = new ArrayList<>();
             for (HashMap<String, Integer> ele : carts.getProducts()) {
                 Products product = new Products();
-                product.setProductId(ele.get("productId"));
                 product.setQuantity(ele.get("quantity"));
+                product.setProductId(ele.get("productId"));
                 products.add(product);
             }
             cart.setProducts(products);
             ans.add(cart);
         }
-        System.out.println("All carts in date range "+startDate+" to "+endDate+" fetched successfully!!!");
         return ans;
     }
 
     public List<Cart> getUserCarts(Long id) {
-        FakeStoreCartServiceDto[] fakeStoreCartServiceDto = restTemplate.getForObject(
+        FakeStoreCartServiceDto[] serviceDto = restTemplate.getForObject(
                 "https://fakestoreapi.com/carts/user/" + id,
                 FakeStoreCartServiceDto[].class
         );
         List<Cart> ans = new ArrayList<>();
-        for (FakeStoreCartServiceDto carts : fakeStoreCartServiceDto) {
+        for (FakeStoreCartServiceDto carts : serviceDto) {
             Cart cart = new Cart();
             cart.setId(carts.getId());
             cart.setUserId(carts.getUserId());
@@ -106,13 +80,55 @@ public class FakeStoreCartService implements CartService {
             cart.setProducts(products);
             ans.add(cart);
         }
-        System.out.println("User's cart fetched successfully!!!");
         return ans;
     }
 
-    public void deleteCart(Long id) {
+    public Cart uCart(Cart cart) {
+        FakeStoreCartServiceDto storeCart = new FakeStoreCartServiceDto();
+        storeCart.setId(cart.getId());
+        storeCart.setUserId(cart.getUserId());
+        storeCart.setDate(cart.getDate());
+        HashMap<String, Integer>[] products = new HashMap[cart.getProducts().size()];
+        for (int i = 0; i < cart.getProducts().size(); i++) {
+            HashMap<String, Integer> map = new HashMap<>();
+            map.put("productId", (int)cart.getProducts().get(i).getProductId());
+            map.put("quantity", (int)cart.getProducts().get(i).getQuantity());
+            products[i] = map;
+        }
+
+        restTemplate.put(
+                "https://fakestoreapi.com/carts/" + cart.getId(),
+                storeCart
+        );
+        return cart;
+    }
+
+    public List<Cart> getAllCarts() {
+        FakeStoreCartServiceDto[] serviceDto = restTemplate.getForObject(
+                "https://fakestoreapi.com/carts/",
+                FakeStoreCartServiceDto[].class
+        );
+        List<Cart> ans = new ArrayList<>();
+        for (FakeStoreCartServiceDto carts : serviceDto) {
+            Cart cart = new Cart();
+            cart.setId(carts.getId());
+            cart.setUserId(carts.getUserId());
+            cart.setDate(carts.getDate());
+            List<Products> products = new ArrayList<>();
+            for (HashMap<String, Integer> ele : carts.getProducts()) {
+                Products product = new Products();
+                product.setProductId(ele.get("productId"));
+                product.setQuantity(ele.get("quantity"));
+                products.add(product);
+            }
+            cart.setProducts(products);
+            ans.add(cart);
+        }
+        return ans;
+    }
+
+    public void dCart(Long id) {
         restTemplate.delete("https://fakestoreapi.com/carts/" + id);
-        System.out.println("Cart deleted successfully!!!");
     }
 
     public Cart createCart(Cart cart) {
@@ -133,28 +149,6 @@ public class FakeStoreCartService implements CartService {
                 storeCart,
                 FakeStoreCartServiceDto.class
         );
-        System.out.println("Cart created successfully!!!");
-        return cart;
-    }
-
-    public Cart updateCart(Cart cart) {
-        FakeStoreCartServiceDto storeCart = new FakeStoreCartServiceDto();
-        storeCart.setId(cart.getId());
-        storeCart.setUserId(cart.getUserId());
-        storeCart.setDate(cart.getDate());
-        HashMap<String, Integer>[] products = new HashMap[cart.getProducts().size()];
-        for (int i = 0; i < cart.getProducts().size(); i++) {
-            HashMap<String, Integer> map = new HashMap<>();
-            map.put("productId", (int)cart.getProducts().get(i).getProductId());
-            map.put("quantity", (int)cart.getProducts().get(i).getQuantity());
-            products[i] = map;
-        }
-
-        restTemplate.put(
-                "https://fakestoreapi.com/carts/" + cart.getId(),
-                storeCart
-        );
-        System.out.println("Cart updated successfully!!!");
         return cart;
     }
 
