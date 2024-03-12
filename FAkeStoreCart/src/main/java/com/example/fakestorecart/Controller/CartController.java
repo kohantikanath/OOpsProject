@@ -30,28 +30,28 @@ public class CartController {
         return cartService.getAllCarts();
     }
 
-    @GetMapping("/carts/{sDate}/{eDate}")
-    public List<Cart> getCartsInDateRange(@PathVariable("sDate") String sDate, @PathVariable("eDate") String eDate) {
-        return cartService.getCartsInDateRange(sDate, eDate);
-    }
-
-    @GetMapping("/carts/user/{id}")
-    public List<Cart> getUserCarts(@PathVariable("id") Long id) {
-        return cartService.getUserCarts(id);
-    }
-
-    @DeleteMapping("/carts/{id}")
-    public void deleteCart(@PathVariable("id") Long id) {
-        cartService.deleteCart(id);
-    }
-
     @PostMapping("/carts")
     public Cart createCart(@RequestBody Cart cart) {
         return cartService.createCart(cart);
     }
 
+    @GetMapping("/carts/{sDate}/{eDate}")
+    public List<Cart> getCartsInDate(@PathVariable("sDate") String sDate, @PathVariable("eDate") String eDate) {
+        return cartService.getCartsInDate(sDate, eDate);
+    }
+
+    @DeleteMapping("/carts/{id}")
+    public void deleteCart(@PathVariable("id") Long id) {
+        cartService.dCart(id);
+    }
+
     @PutMapping("/carts")
     public Cart updateCart(@RequestBody Cart cart) {
-        return cartService.updateCart(cart);
+        return cartService.uCart(cart);
+    }
+
+    @GetMapping("/carts/user/{id}")
+    public List<Cart> getUserCarts(@PathVariable("id") Long id) {
+        return cartService.getUserCarts(id);
     }
 }
