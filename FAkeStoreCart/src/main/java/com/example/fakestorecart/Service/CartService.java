@@ -3,17 +3,17 @@ import com.example.fakestorecart.Models.Cart;
 
 import java.util.List;
 public interface CartService {
-    public Cart getSingleCart(Long id);
+    Cart getSingleCart(Long id);
 
-    public List<Cart> getAllCarts();
+    List<Cart> getAllCarts();
 
-    public List<Cart> getCartsInDateRange (String startDate, String endDate);
+    List<Cart> getCartsInDate (String startDate, String endDate);
 
-    public List<Cart> getUserCarts(Long id);
+    List<Cart> getUserCarts(Long id);
 
-    public void deleteCart(Long id);
+    void dCart(Long id);
 
-    public Cart createCart(Cart cart);
+    Cart createCart(Cart cart);
 
-    public Cart updateCart(Cart cart);
+    Cart uCart(Cart cart);
 }
